@@ -87,26 +87,29 @@ if not artist_tracks.empty:
     
     top_10 = artist_tracks.head(10)
     
-    # Gráfico de barras horizontal para melhor legibilidade
-    fig_top10 = px.bar(
-        top_10, 
-        x='popularity', 
+    # Top 10 músicas mais populares
+    fig_bar = px.bar(
+        top_10,
+        x='popularity',
         y='track_name',
         orientation='h',
-        title=f'Top 10 Músicas de {selected_artist}',
+        title='Top 10 Músicas Mais Populares',
         labels={'popularity': 'Popularidade', 'track_name': 'Música'},
         color='popularity',
-        color_continuous_scale='Viridis',
-        height=500
+        color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
+        height=450
     )
-    fig_top10.update_layout(
+    
+    # Personalizar o layout
+    fig_bar.update_layout(
         yaxis={'categoryorder': 'total ascending'},
-        showlegend=False,
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font_color='white'
+        font_color='white',
+        showlegend=False
     )
-    st.plotly_chart(fig_top10, use_container_width=True)
+    
+    st.plotly_chart(fig_bar, use_container_width=True)
     
     # 2. DISTRIBUIÇÃO DE POPULARIDADE
     st.write("### 📊 Distribuição de Popularidade")
@@ -114,14 +117,14 @@ if not artist_tracks.empty:
     col1, col2 = st.columns(2)
     
     with col1:
-        # Histograma de distribuição
+        # Histograma de popularidade
         fig_hist = px.histogram(
             artist_tracks,
             x='popularity',
-            nbins=10,
+            nbins=20,
             title='Distribuição de Popularidade das Músicas',
-            labels={'popularity': 'Popularidade', 'count': 'Quantidade de Músicas'},
-            color_discrete_sequence=['#1f77b4'],
+            labels={'popularity': 'Popularidade', 'count': 'Número de Músicas'},
+            color_discrete_sequence=['#00a8b5'],
             height=400,
             width=500
         )
@@ -162,7 +165,7 @@ if not artist_tracks.empty:
             y='popularity',
             title='Análise Estatística da Popularidade',
             labels={'popularity': 'Popularidade'},
-            color_discrete_sequence=['#ff7f0e'],
+            color_discrete_sequence=['#a02570'],
             height=400,
             width=500
         )
@@ -174,35 +177,33 @@ if not artist_tracks.empty:
         )
         st.plotly_chart(fig_box, use_container_width=False)
     
-    # 3. ANÁLISE POR FAIXAS DE POPULARIDADE
-    st.write("### 🎯 Análise por Faixas de Popularidade")
+    # 3. ANÁLISE POR CATEGORIAS DE POPULARIDADE
+    st.write("### 🎯 Análise por Categorias")
     
-    # Categorizar músicas por faixa de popularidade
+    # Criar categorias baseadas na popularidade
     def categorize_popularity(pop):
         if pop >= 70:
-            return "Muito Alta (70+)"
+            return "Muito Popular (70+)"
         elif pop >= 50:
-            return "Alta (50-69)"
+            return "Popular (50-69)"
         elif pop >= 30:
-            return "Média (30-49)"
+            return "Moderado (30-49)"
         else:
             return "Baixa (0-29)"
     
     artist_tracks['categoria'] = artist_tracks['popularity'].apply(categorize_popularity)
-    
-    # Contar músicas por categoria
     category_counts = artist_tracks['categoria'].value_counts()
     
-    # Gráfico de barras horizontais
+    # Gráfico de barras das categorias
     fig_categories = px.bar(
         x=category_counts.values,
         y=category_counts.index,
         orientation='h',
-        title='Distribuição por Faixa de Popularidade',
-        labels={'x': 'Número de Músicas', 'y': 'Faixa de Popularidade'},
+        title='Distribuição por Categoria de Popularidade',
+        labels={'x': 'Número de Músicas', 'y': 'Categoria'},
         color=category_counts.values,
-        color_continuous_scale=[[0, COLORS['secondary']], [0.5, COLORS['highlight']], [1, COLORS['accent2']]],
-        height=350
+        color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
+        height=450
     )
     fig_categories.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',

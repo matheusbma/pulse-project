@@ -163,25 +163,36 @@ if all_events:
     shows_by_country = shows_by_country.dropna(subset=['lat', 'lon'])
     
     if not shows_by_country.empty:
-        # Criar mapa de dispersão
-        fig_map = px.scatter_mapbox(
+        # Mapa mundial de shows
+        fig_map = px.scatter_geo(
             shows_by_country,
             lat='lat',
             lon='lon',
             size='show_count',
-            color='show_count',
             hover_name='venue_country',
-            hover_data={'show_count': True, 'lat': False, 'lon': False},
-            color_continuous_scale='Viridis',
-            size_max=50,
-            zoom=1,
-            title=f'Shows de {selected_artist} pelo Mundo'
+            color='show_count',
+            title=f'Localização dos Shows de {selected_artist} pelo Mundo',
+            projection='equirectangular',
+            color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
+            height=600
         )
         fig_map.update_layout(
-            mapbox_style="carto-darkmatter",
-            height=500,
             paper_bgcolor='rgba(0,0,0,0)',
-            font_color='white'
+            plot_bgcolor='rgba(0,0,0,0)',
+            font_color='white',
+            geo=dict(
+                showframe=False,
+                showcoastlines=True,
+                coastlinecolor="rgba(0,0,0,0.3)",  # Preto suave para contornos
+                showland=True,
+                landcolor='rgba(15,15,25,0.8)',  # Quase preto com toque azul
+                showocean=True,
+                oceancolor='rgba(25,5,35,0.6)',  # Roxo muito escuro
+                showlakes=True,
+                lakecolor='rgba(25,5,35,0.6)',
+                projection_scale=1.2
+            ),
+            margin=dict(l=0, r=0, t=40, b=0)
         )
         st.plotly_chart(fig_map, use_container_width=True)
     else:
@@ -204,7 +215,7 @@ if all_events:
                 title='Top 10 Países com Mais Shows',
                 labels={'x': 'Número de Shows', 'y': 'País'},
                 color=country_counts.values,
-                color_continuous_scale='Blues',
+                color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
                 height=450
             )
             fig_countries.update_layout(
@@ -230,7 +241,7 @@ if all_events:
                 title='Top 10 Cidades com Mais Shows',
                 labels={'x': 'Número de Shows', 'y': 'Cidade'},
                 color=city_counts.values,
-                color_continuous_scale='Reds',
+                color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
                 height=450
             )
             fig_cities.update_layout(
@@ -268,69 +279,10 @@ if all_events:
             font_color='white',
             xaxis_tickangle=-45
         )
-        fig_timeline.update_traces(line_color='#ff4444', marker_color='#ff4444')
+        fig_timeline.update_traces(line_color='#00a8b5', marker_color='#00a8b5')
         st.plotly_chart(fig_timeline, use_container_width=True)
     else:
         st.info("Não há dados suficientes para o gráfico temporal.")
-
-    # 4. ANÁLISE POR STATUS DO TICKET
-    st.write("### 🎫 Status dos Tickets")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        # Distribuição por status - substituindo pizza por barras
-        if 'ticket_status' in artist_events.columns:
-            status_counts = artist_events['ticket_status'].value_counts()
-            
-            if not status_counts.empty:
-                fig_status = px.bar(
-                    x=status_counts.values,
-                    y=status_counts.index,
-                    orientation='h',
-                    title='Status dos Tickets',
-                    labels={'x': 'Número de Shows', 'y': 'Status'},
-                    color=status_counts.values,
-                    color_continuous_scale=[[0, COLORS['secondary']], [0.5, COLORS['highlight']], [1, COLORS['accent2']]],
-                    height=450
-                )
-                fig_status.update_layout(
-                    yaxis={'categoryorder': 'total ascending'},
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    font_color='white',
-                    showlegend=False
-                )
-                st.plotly_chart(fig_status, use_container_width=True)
-            else:
-                st.info("Não há dados de status de tickets.")
-        else:
-            st.info("Dados de status de tickets não disponíveis.")
-    
-    with col2:
-        # Shows por ano
-        artist_events['year'] = artist_events['event_date'].dt.year
-        year_counts = artist_events['year'].value_counts().sort_index()
-        
-        if not year_counts.empty:
-            fig_years = px.bar(
-                x=year_counts.index,
-                y=year_counts.values,
-                title='Shows por Ano',
-                labels={'x': 'Ano', 'y': 'Número de Shows'},
-                color=year_counts.values,
-                color_continuous_scale='Greens',
-                height=450
-            )
-            fig_years.update_layout(
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)',
-                font_color='white',
-                showlegend=False
-            )
-            st.plotly_chart(fig_years, use_container_width=True)
-        else:
-            st.info("Não há dados suficientes para o gráfico por ano.")
 
 else:
     st.write("### 📊 Análise de Shows")

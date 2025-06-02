@@ -73,47 +73,19 @@ related_artists = related_df[related_df['spotify_id'] == st.session_state.select
 
 if not related_artists.empty:
     st.write("### Artistas Relacionados")
-    
-    # Agrupa os artistas relacionados por similaridade
-    for _, related in related_artists.iterrows():
-        related_artist_data = artists_df[artists_df['artist_name'] == related['related_artist_name']]
-        
-        if not related_artist_data.empty:
-            related_artist_data = related_artist_data.iloc[0]
-            
-            with st.expander(f"{related['related_artist_name']}"):
-                col1, col2 = st.columns([1, 2])
-                
-                with col1:
-                    image_url = related_artist_data['image_url'] if pd.notna(related_artist_data['image_url']) else 'https://via.placeholder.com/200x200?text=No+Image'
-                    st.image(image_url, width=200)
-                
-                with col2:
-                    st.write(f"**Tipo:** {related_artist_data['artist_type'].title()}")
-                    st.write(f"**País:** {related_artist_data['country']}")
-                    st.write(f"**Popularidade:** {int(related_artist_data['popularity'])}/100")
-                    st.write(f"**Seguidores:** {int(related_artist_data['followers']):,}")
-                    if pd.notna(related_artist_data['genres']):
-                        st.write(f"**Gêneros:** {related_artist_data['genres']}")
-                    
-                    st.markdown(f"[Ver no Spotify]({related_artist_data['spotify_url']})")
 
     # Filtra os artistas relacionados ao artista selecionado
     related_artists_data = related_df[related_df['spotify_id'] == st.session_state.selected_artist_id].copy()
 
     if not related_artists_data.empty:
         # Layout em duas colunas para métricas
-        col1, col2, col3 = st.columns(3)
+        col1, col2 = st.columns(2)
         
         with col1:
-            total_related = len(related_artists_data)
-            st.metric("Artistas Relacionados", total_related)
-        
-        with col2:
             avg_popularity = related_artists_data['related_artist_popularity'].mean()
             st.metric("Popularidade Média", f"{avg_popularity:.1f}")
         
-        with col3:
+        with col2:
             unique_genres = related_artists_data['related_artist_genres'].str.split(', ').explode().nunique()
             st.metric("Gêneros Únicos", unique_genres)
 
@@ -150,7 +122,7 @@ if not related_artists.empty:
             title=f'Comparação de Popularidade: {selected_artist} vs Artistas Relacionados',
             labels={'popularity': 'Popularidade', 'artist_name': 'Artista'},
             color='popularity',
-            color_continuous_scale='RdYlBu_r',
+            color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
             height=600
         )
         fig_comparison.update_layout(
@@ -186,7 +158,9 @@ if not related_artists.empty:
                     title='Top 15 Gêneros Musicais',
                     labels={'x': 'Frequência', 'y': 'Gênero'},
                     color=genre_counts.values,
-                    color_continuous_scale='Viridis'
+                    color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
+                    height=400,
+                    width=470
                 )
                 fig_genres.update_layout(
                     yaxis={'categoryorder': 'total ascending'},
@@ -195,22 +169,30 @@ if not related_artists.empty:
                     font_color='white',
                     showlegend=False
                 )
-                st.plotly_chart(fig_genres, use_container_width=True)
+                st.plotly_chart(fig_genres, use_container_width=False)
             
             with col2:
-                # Nuvem de gêneros - gráfico de pizza dos top 10
+                # Substituir pizza por barras horizontais - Top 10 Gêneros
                 top_10_genres = genre_counts.head(10)
-                fig_pie_genres = px.pie(
-                    values=top_10_genres.values,
-                    names=top_10_genres.index,
-                    title='Distribuição dos Top 10 Gêneros',
-                    color_discrete_sequence=px.colors.qualitative.Set3
+                fig_bar_genres = px.bar(
+                    x=top_10_genres.values,
+                    y=top_10_genres.index,
+                    orientation='h',
+                    title='Top 10 Gêneros - Distribuição',
+                    labels={'x': 'Frequência', 'y': 'Gênero'},
+                    color=top_10_genres.values,
+                    color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
+                    height=400,
+                    width=470
                 )
-                fig_pie_genres.update_layout(
+                fig_bar_genres.update_layout(
+                    yaxis={'categoryorder': 'total ascending'},
                     paper_bgcolor='rgba(0,0,0,0)',
-                    font_color='white'
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    font_color='white',
+                    showlegend=False
                 )
-                st.plotly_chart(fig_pie_genres, use_container_width=True)
+                st.plotly_chart(fig_bar_genres, use_container_width=False)
 
         # 3. DISTRIBUIÇÃO DE POPULARIDADE DOS ARTISTAS RELACIONADOS
         st.write("### 📊 Distribuição de Popularidade")
@@ -225,14 +207,16 @@ if not related_artists.empty:
                 nbins=15,
                 title='Distribuição de Popularidade dos Artistas Relacionados',
                 labels={'related_artist_popularity': 'Popularidade', 'count': 'Número de Artistas'},
-                color_discrete_sequence=['#ff6b6b']
+                color_discrete_sequence=['#00a8b5'],
+                height=400,
+                width=470
             )
             fig_hist.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font_color='white'
             )
-            st.plotly_chart(fig_hist, use_container_width=True)
+            st.plotly_chart(fig_hist, use_container_width=False)
         
         with col2:
             # Box plot estatístico
@@ -241,7 +225,9 @@ if not related_artists.empty:
                 y='related_artist_popularity',
                 title='Análise Estatística da Popularidade',
                 labels={'related_artist_popularity': 'Popularidade'},
-                color_discrete_sequence=['#4dabf7']
+                color_discrete_sequence=['#a02570'],
+                height=400,
+                width=470
             )
             fig_box.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
@@ -249,7 +235,7 @@ if not related_artists.empty:
                 font_color='white',
                 showlegend=False
             )
-            st.plotly_chart(fig_box, use_container_width=True)
+            st.plotly_chart(fig_box, use_container_width=False)
 
         # 4. ANÁLISE DE CATEGORIAS DE POPULARIDADE
         st.write("### 🎯 Categorias de Popularidade")
@@ -271,18 +257,26 @@ if not related_artists.empty:
         col1, col2 = st.columns(2)
         
         with col1:
-            # Gráfico de pizza por categoria
-            fig_categories = px.pie(
-                values=category_counts.values,
-                names=category_counts.index,
+            # Substituir pizza por barras horizontais - Categorias de Popularidade
+            fig_categories = px.bar(
+                x=category_counts.values,
+                y=category_counts.index,
+                orientation='h',
                 title='Distribuição por Categoria de Popularidade',
-                color_discrete_sequence=px.colors.qualitative.Pastel
+                labels={'x': 'Número de Artistas', 'y': 'Categoria'},
+                color=category_counts.values,
+                color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
+                height=400,
+                width=500
             )
             fig_categories.update_layout(
+                yaxis={'categoryorder': 'total ascending'},
                 paper_bgcolor='rgba(0,0,0,0)',
-                font_color='white'
+                plot_bgcolor='rgba(0,0,0,0)',
+                font_color='white',
+                showlegend=False
             )
-            st.plotly_chart(fig_categories, use_container_width=True)
+            st.plotly_chart(fig_categories, use_container_width=False)
         
         with col2:
             # Scatter plot: relacionar gêneros com popularidade
@@ -301,85 +295,16 @@ if not related_artists.empty:
                     title='Popularidade Média por Gênero (min. 2 artistas)',
                     labels={'count': 'Número de Artistas', 'mean': 'Popularidade Média'},
                     color='mean',
-                    color_continuous_scale='Viridis'
+                    color_continuous_scale=[[0, '#a02570'], [0.5, COLORS['accent']], [1, '#00a8b5']],
+                    height=400,
+                    width=500
                 )
                 fig_genre_pop.update_layout(
                     paper_bgcolor='rgba(0,0,0,0)',
                     plot_bgcolor='rgba(0,0,0,0)',
                     font_color='white'
                 )
-                st.plotly_chart(fig_genre_pop, use_container_width=True)
-
-        # 5. NETWORK SIMPLIFICADO - TOP CONEXÕES
-        st.write("### 🕸️ Rede de Conexões Musicais")
-        
-        # Criar uma visualização de rede simplificada
-        top_20_related = related_artists_data.nlargest(20, 'related_artist_popularity')
-        
-        # Criar dados para sunburst (hierarquia de gêneros)
-        sunburst_data = []
-        
-        for _, artist in top_20_related.iterrows():
-            genres = artist['related_artist_genres']
-            if pd.notna(genres) and genres != '':
-                main_genre = genres.split(',')[0].strip()
-                sunburst_data.append({
-                    'ids': artist['related_artist_name'],
-                    'labels': artist['related_artist_name'],
-                    'parents': main_genre,
-                    'values': artist['related_artist_popularity']
-                })
-                sunburst_data.append({
-                    'ids': main_genre,
-                    'labels': main_genre,
-                    'parents': selected_artist,
-                    'values': 0
-                })
-        
-        # Adicionar artista principal
-        sunburst_data.append({
-            'ids': selected_artist,
-            'labels': selected_artist,
-            'parents': '',
-            'values': 0
-        })
-        
-        if sunburst_data:
-            sunburst_df = pd.DataFrame(sunburst_data).drop_duplicates(subset=['ids'])
-            
-            fig_sunburst = px.sunburst(
-                sunburst_df,
-                ids='ids',
-                labels='labels',
-                parents='parents',
-                values='values',
-                title=f'Rede de Artistas Relacionados a {selected_artist}',
-                color='values',
-                color_continuous_scale='Viridis'
-            )
-            fig_sunburst.update_layout(
-                paper_bgcolor='rgba(0,0,0,0)',
-                font_color='white'
-            )
-            st.plotly_chart(fig_sunburst, use_container_width=True)
-
-        # 6. TABELA COMPLETA DE ARTISTAS RELACIONADOS
-        st.write("### 📋 Lista Completa de Artistas Relacionados")
-        
-        # Criar tabela organizada
-        artists_table = related_artists_data[['related_artist_name', 'related_artist_popularity', 'related_artist_genres']].copy()
-        artists_table = artists_table.sort_values('related_artist_popularity', ascending=False)
-        artists_table = artists_table.rename(columns={
-            'related_artist_name': 'Artista',
-            'related_artist_popularity': 'Popularidade',
-            'related_artist_genres': 'Gêneros'
-        })
-        
-        st.dataframe(
-            artists_table,
-            use_container_width=True,
-            height=400
-        )
+                st.plotly_chart(fig_genre_pop, use_container_width=False)
 
 else:
     st.info("Não há artistas relacionados disponíveis para este artista.") 

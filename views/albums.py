@@ -108,7 +108,7 @@ if not artist_albums.empty:
         xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)'),
         yaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)')
     )
-    fig_timeline.update_traces(line_color='#00ff85', marker_color='#00ff85')
+    fig_timeline.update_traces(line_color='#00a8b5', marker_color='#00a8b5')
     st.plotly_chart(fig_timeline, use_container_width=True)
 
     # 2. ANÁLISE POR TIPO DE ÁLBUM
@@ -128,7 +128,7 @@ if not artist_albums.empty:
             title='Tipos de Lançamentos',
             labels={'x': 'Quantidade', 'y': 'Tipo'},
             color=type_counts.values,
-            color_continuous_scale=[[0, COLORS['secondary']], [0.5, COLORS['highlight']], [1, COLORS['accent2']]],
+            color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
             height=400
         )
         fig_bar_horizontal.update_layout(
@@ -148,7 +148,7 @@ if not artist_albums.empty:
             title='Quantidade por Tipo',
             labels={'x': 'Tipo', 'y': 'Quantidade'},
             color=type_counts.values,
-            color_continuous_scale='Blues',
+            color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
             height=400
         )
         fig_bar_type.update_layout(
@@ -172,7 +172,7 @@ if not artist_albums.empty:
             nbins=15,
             title='Distribuição do Número de Faixas',
             labels={'total_tracks': 'Número de Faixas', 'count': 'Quantidade de Álbuns'},
-            color_discrete_sequence=['#ff6b6b'],
+            color_discrete_sequence=['#a02570'],
             height=400,
             width=500
         )
@@ -194,6 +194,7 @@ if not artist_albums.empty:
             title='Evolução do Tamanho dos Álbuns',
             labels={'release_year': 'Ano', 'total_tracks': 'Número de Faixas'},
             hover_data=['album_name'],
+            color_discrete_sequence=[COLORS['accent2'], COLORS['highlight'], COLORS['accent2']],
             height=400,
             width=500
         )
@@ -218,7 +219,7 @@ if not artist_albums.empty:
             labels=dict(x="Década", y="Tipo", color="Quantidade"),
             x=decade_type.index.astype(str),
             y=decade_type.columns,
-            color_continuous_scale='Viridis',
+            color_continuous_scale=[[0, '#0f0f19'], [0.4, '#2d1b4a'], [0.7, '#7c3aed'], [1, '#c084fc']],
             title='Produtividade por Década e Tipo',
             height=450
         )
