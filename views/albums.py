@@ -111,8 +111,8 @@ if not artist_albums.empty:
     fig_timeline.update_traces(line_color='#00a8b5', marker_color='#00a8b5')
     st.plotly_chart(fig_timeline, use_container_width=True)
 
-    # 2. ANÁLISE POR TIPO DE ÁLBUM
-    st.write("### 🎵 Distribuição por Tipo de Álbum")
+    # 2. ANÁLISE POR TIPO DE ÁLBUM E NÚMERO DE FAIXAS
+    st.write("### 🎵 Análise de Álbuns")
     
     col1, col2 = st.columns(2)
     
@@ -120,7 +120,7 @@ if not artist_albums.empty:
         # Contar álbuns por tipo
         type_counts = artist_albums['type'].value_counts()
         
-        # Gráfico de barras horizontais (substituindo pizza)
+        # Gráfico de barras horizontais
         fig_bar_horizontal = px.bar(
             x=type_counts.values,
             y=type_counts.index,
@@ -141,30 +141,6 @@ if not artist_albums.empty:
         st.plotly_chart(fig_bar_horizontal, use_container_width=True)
     
     with col2:
-        # Gráfico de barras verticais para tipos
-        fig_bar_type = px.bar(
-            x=type_counts.index,
-            y=type_counts.values,
-            title='Quantidade por Tipo',
-            labels={'x': 'Tipo', 'y': 'Quantidade'},
-            color=type_counts.values,
-            color_continuous_scale=[[0, COLORS['highlight']], [0.5, COLORS['accent']], [1, COLORS['accent2']]],
-            height=400
-        )
-        fig_bar_type.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font_color='white',
-            showlegend=False
-        )
-        st.plotly_chart(fig_bar_type, use_container_width=True)
-
-    # 3. ANÁLISE DE NÚMERO DE FAIXAS
-    st.write("### 🎼 Análise do Número de Faixas por Álbum")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
         # Histograma de número de faixas
         fig_tracks = px.histogram(
             artist_albums,
@@ -182,28 +158,6 @@ if not artist_albums.empty:
             font_color='white'
         )
         st.plotly_chart(fig_tracks, use_container_width=False)
-    
-    with col2:
-        # Scatter plot: Ano vs Número de faixas
-        fig_scatter = px.scatter(
-            artist_albums,
-            x='release_year',
-            y='total_tracks',
-            size='total_tracks',
-            color='type',
-            title='Evolução do Tamanho dos Álbuns',
-            labels={'release_year': 'Ano', 'total_tracks': 'Número de Faixas'},
-            hover_data=['album_name'],
-            color_discrete_sequence=[COLORS['accent2'], COLORS['highlight'], COLORS['accent2']],
-            height=400,
-            width=500
-        )
-        fig_scatter.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font_color='white'
-        )
-        st.plotly_chart(fig_scatter, use_container_width=False)
 
     # 4. HEATMAP DE PRODUTIVIDADE POR DÉCADA
     st.write("### 🔥 Heatmap de Produtividade por Década")
