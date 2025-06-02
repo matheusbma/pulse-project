@@ -1,6 +1,9 @@
 # 🎵 Pulse - Dashboard de Análise Musical
 
-![Pulse Banner](https://via.placeholder.com/800x200/4c0db1/ffffff?text=PULSE+-+Music+Data+Visualization+Dashboard)
+[![Pulse Dashboard](https://img.shields.io/badge/Pulse-Dashboard-00c4cc?style=for-the-badge)](https://pulse-gti-grupo1.streamlit.app/)
+
+Acesse o dashboard em: [pulse-gti-grupo1.streamlit.app](https://pulse-gti-grupo1.streamlit.app/)
+
 
 ## 📋 Índice
 
