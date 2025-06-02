@@ -42,14 +42,27 @@ if selected_artist != st.session_state.get('selected_artist'):
 
 # Cabeçalho
 artist_data = artists_df[artists_df['artist_name'] == selected_artist].iloc[0]
-st.markdown(f"""
-    <div style='display: flex; align-items: center; margin-bottom: 2rem;'>
-        <h2 style='color: white; margin-bottom: 0;'>{selected_artist}</h2>
-        <a href='{artist_data['spotify_url']}' target='_blank' style='margin-left: -20px; text-decoration: none;'>
-            <img src='https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg' width='20'>
-        </a>
+
+# Cabeçalho com foto e nome
+col1, col2 = st.columns([1, 9])
+
+with col1:
+    image_url = artist_data['image_url'] if pd.notna(artist_data['image_url']) else 'https://via.placeholder.com/100x100?text=No+Image'
+    st.markdown(f"""
+    <div style='display: flex; justify-content: flex-start; margin-bottom: 1rem;'>
+        <img src='{image_url}' style='border-radius: 10px; object-fit: cover; object-position: center; width: 100px; height: 100px;'>
     </div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
+
+with col2:
+    st.markdown(f"""
+        <div style='display: flex; align-items: center; margin-bottom: 2rem; margin-top: 10px;'>
+            <h2 style='color: white; margin-bottom: 0;'>{selected_artist}</h2>
+            <a href='{artist_data['spotify_url']}' target='_blank' style='margin-left: -20px; text-decoration: none;'>
+                <img src='https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg' width='20'>
+            </a>
+        </div>
+    """, unsafe_allow_html=True)
 
 # Filtra as músicas do artista selecionado
 artist_tracks = tracks_df[tracks_df['spotify_id'] == st.session_state.selected_artist_id].copy()
