@@ -149,6 +149,25 @@ if not artist_future_events.empty:
             st.write(f"**Data:** {show['event_date'].strftime('%d/%m/%Y')}")
             st.write(f"**Cidade:** {show['venue_city']}")
             st.write(f"**País:** {show['venue_country']}")
+            
+            # Adiciona link para compra de ingresso se disponível
+            if pd.notna(show['ticket_url']) and show['ticket_status'] == 'Tickets':
+                st.markdown(f"""
+                <div style='margin-bottom: 12px;'>
+                    <a href='{show['ticket_url']}' target='_blank' style='
+                        background-color: {COLORS["highlight"]};
+                        color: white;
+                        padding: 8px 16px;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        font-weight: 500;
+                        display: inline-block;
+                        transition: background-color 0.3s;
+                    '>
+                        🎫 Comprar Ingresso
+                    </a>
+                </div>
+                """, unsafe_allow_html=True)
 
 # Shows Passados
 if not artist_past_events.empty:
