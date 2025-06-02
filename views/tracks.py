@@ -12,7 +12,7 @@ apply_custom_css()
 def load_data():
     try:
         artists_df = pd.read_csv('data/artists.csv')
-        tracks_df = pd.read_csv('data/tracks.csv')
+        tracks_df = pd.read_csv('data/tracks.csv')  # Voltando para o arquivo original
         return artists_df, tracks_df
     except Exception as e:
         st.error(f"Erro ao carregar os dados: {str(e)}")
@@ -64,17 +64,167 @@ with col2:
         </div>
     """, unsafe_allow_html=True)
 
-# Filtra as músicas do artista selecionado
+# Filtra as faixas do artista selecionado
 artist_tracks = tracks_df[tracks_df['spotify_id'] == st.session_state.selected_artist_id].copy()
 
 if not artist_tracks.empty:
-    # Ordena as músicas por popularidade
+    # Ordena as músicas por popularidade (maior para menor)
     artist_tracks = artist_tracks.sort_values('popularity', ascending=False)
-
-    # Exibe as músicas
-    st.write("### Músicas")
-    for _, track in artist_tracks.iterrows():
-        with st.expander(f"{track['track_name']}"):
-            st.write(f"**Popularidade:** {int(track['popularity'])}/100")
+    
+    # Layout em duas colunas para métricas
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        avg_popularity = artist_tracks['popularity'].mean()
+        st.metric("Popularidade Média", f"{avg_popularity:.1f}")
+    
+    with col2:
+        max_popularity = artist_tracks['popularity'].max()
+        st.metric("Música Mais Popular", f"{max_popularity}")
+    
+    # 1. TOP 10 MÚSICAS MAIS POPULARES
+    st.write("### 🏆 Top 10 Músicas Mais Populares")
+    
+    top_10 = artist_tracks.head(10)
+    
+    # Gráfico de barras horizontal para melhor legibilidade
+    fig_top10 = px.bar(
+        top_10, 
+        x='popularity', 
+        y='track_name',
+        orientation='h',
+        title=f'Top 10 Músicas de {selected_artist}',
+        labels={'popularity': 'Popularidade', 'track_name': 'Música'},
+        color='popularity',
+        color_continuous_scale='Viridis',
+        height=500
+    )
+    fig_top10.update_layout(
+        yaxis={'categoryorder': 'total ascending'},
+        showlegend=False,
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font_color='white'
+    )
+    st.plotly_chart(fig_top10, use_container_width=True)
+    
+    # 2. DISTRIBUIÇÃO DE POPULARIDADE
+    st.write("### 📊 Distribuição de Popularidade")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Histograma de distribuição
+        fig_hist = px.histogram(
+            artist_tracks,
+            x='popularity',
+            nbins=10,
+            title='Distribuição de Popularidade das Músicas',
+            labels={'popularity': 'Popularidade', 'count': 'Quantidade de Músicas'},
+            color_discrete_sequence=['#1f77b4'],
+            height=400,
+            width=500
+        )
+        fig_hist.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font_color='white',
+            xaxis=dict(
+                title='Popularidade (0 = Menos Popular | 100 = Mais Popular)',
+                tickmode='linear',
+                tick0=0,
+                dtick=10,
+                tickvals=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+                ticktext=['0\n(Baixa)', '10', '20', '30\n(Média)', '40', '50', '60', '70\n(Alta)', '80', '90', '100\n(Máxima)'],
+                gridcolor='rgba(255,255,255,0.1)',
+                color='white',
+                range=[-5, 105]
+            ),
+            yaxis=dict(
+                title='Número de Músicas',
+                gridcolor='rgba(255,255,255,0.1)',
+                color='white'
+            )
+        )
+        
+        # Adicionar linhas de referência para faixas importantes
+        fig_hist.add_vline(x=30, line_dash="dash", line_color="rgba(255,255,255,0.3)", 
+                          annotation_text="Popularidade Média", annotation_position="top")
+        fig_hist.add_vline(x=70, line_dash="dash", line_color="rgba(255,255,255,0.3)", 
+                          annotation_text="Alta Popularidade", annotation_position="top")
+        
+        st.plotly_chart(fig_hist, use_container_width=False)
+    
+    with col2:
+        # Box plot para análise estatística
+        fig_box = px.box(
+            artist_tracks,
+            y='popularity',
+            title='Análise Estatística da Popularidade',
+            labels={'popularity': 'Popularidade'},
+            color_discrete_sequence=['#ff7f0e'],
+            height=400,
+            width=500
+        )
+        fig_box.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font_color='white',
+            showlegend=False
+        )
+        st.plotly_chart(fig_box, use_container_width=False)
+    
+    # 3. ANÁLISE POR FAIXAS DE POPULARIDADE
+    st.write("### 🎯 Análise por Faixas de Popularidade")
+    
+    # Categorizar músicas por faixa de popularidade
+    def categorize_popularity(pop):
+        if pop >= 70:
+            return "Muito Alta (70+)"
+        elif pop >= 50:
+            return "Alta (50-69)"
+        elif pop >= 30:
+            return "Média (30-49)"
+        else:
+            return "Baixa (0-29)"
+    
+    artist_tracks['categoria'] = artist_tracks['popularity'].apply(categorize_popularity)
+    
+    # Contar músicas por categoria
+    category_counts = artist_tracks['categoria'].value_counts()
+    
+    # Gráfico de barras horizontais
+    fig_categories = px.bar(
+        x=category_counts.values,
+        y=category_counts.index,
+        orientation='h',
+        title='Distribuição por Faixa de Popularidade',
+        labels={'x': 'Número de Músicas', 'y': 'Faixa de Popularidade'},
+        color=category_counts.values,
+        color_continuous_scale=[[0, COLORS['secondary']], [0.5, COLORS['highlight']], [1, COLORS['accent2']]],
+        height=350
+    )
+    fig_categories.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font_color='white',
+        showlegend=False,
+        title_font_color='white',
+        xaxis=dict(
+            gridcolor='rgba(255,255,255,0.1)',
+            color='white'
+        ),
+        yaxis=dict(
+            categoryorder='total ascending',
+            gridcolor='rgba(255,255,255,0.1)',
+            color='white'
+        )
+    )
+    fig_categories.update_traces(
+        marker_line_color='rgba(255,255,255,0.2)',
+        marker_line_width=1
+    )
+    st.plotly_chart(fig_categories, use_container_width=True)
+    
 else:
     st.info("Não há músicas disponíveis para este artista.") 
