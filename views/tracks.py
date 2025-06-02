@@ -96,7 +96,7 @@ if not artist_tracks.empty:
         title='Top 10 Músicas Mais Populares',
         labels={'popularity': 'Popularidade', 'track_name': 'Música'},
         color='popularity',
-        color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
+        color_continuous_scale=[[0, COLORS['highlight']], [0.5, COLORS['accent']], [1, COLORS['accent2']]],
         height=450
     )
     
@@ -124,7 +124,7 @@ if not artist_tracks.empty:
             nbins=20,
             title='Distribuição de Popularidade das Músicas',
             labels={'popularity': 'Popularidade', 'count': 'Número de Músicas'},
-            color_discrete_sequence=['#00a8b5'],
+            color_discrete_sequence=[COLORS['accent']],
             height=400,
             width=500
         )
@@ -202,7 +202,7 @@ if not artist_tracks.empty:
         title='Distribuição por Categoria de Popularidade',
         labels={'x': 'Número de Músicas', 'y': 'Categoria'},
         color=category_counts.values,
-        color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
+        color_continuous_scale=[[0, COLORS['highlight']], [0.5, COLORS['accent']], [1, COLORS['accent2']]],
         height=450
     )
     fig_categories.update_layout(

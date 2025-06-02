@@ -122,7 +122,7 @@ if not related_artists.empty:
             title=f'Comparação de Popularidade: {selected_artist} vs Artistas Relacionados',
             labels={'popularity': 'Popularidade', 'artist_name': 'Artista'},
             color='popularity',
-            color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
+            color_continuous_scale=[[0, COLORS['highlight']], [0.5, COLORS['accent']], [1, COLORS['accent2']]],
             height=600
         )
         fig_comparison.update_layout(
@@ -158,7 +158,7 @@ if not related_artists.empty:
                     title='Top 15 Gêneros Musicais',
                     labels={'x': 'Frequência', 'y': 'Gênero'},
                     color=genre_counts.values,
-                    color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
+                    color_continuous_scale=[[0, COLORS['highlight']], [0.5, COLORS['accent']], [1, COLORS['accent2']]],
                     height=400,
                     width=470
                 )
@@ -181,7 +181,7 @@ if not related_artists.empty:
                     title='Top 10 Gêneros - Distribuição',
                     labels={'x': 'Frequência', 'y': 'Gênero'},
                     color=top_10_genres.values,
-                    color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
+                    color_continuous_scale=[[0, COLORS['highlight']], [0.5, COLORS['accent']], [1, COLORS['accent2']]],
                     height=400,
                     width=470
                 )
@@ -265,7 +265,7 @@ if not related_artists.empty:
                 title='Distribuição por Categoria de Popularidade',
                 labels={'x': 'Número de Artistas', 'y': 'Categoria'},
                 color=category_counts.values,
-                color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
+                color_continuous_scale=[[0, COLORS['highlight']], [0.5, COLORS['accent']], [1, COLORS['accent2']]],
                 height=400,
                 width=500
             )
@@ -295,7 +295,7 @@ if not related_artists.empty:
                     title='Popularidade Média por Gênero (min. 2 artistas)',
                     labels={'count': 'Número de Artistas', 'mean': 'Popularidade Média'},
                     color='mean',
-                    color_continuous_scale=[[0, '#a02570'], [0.5, COLORS['accent']], [1, '#00a8b5']],
+                    color_continuous_scale=[[0, '#00a8b5'], [0.5, COLORS['accent']], [1, '#a02570']],
                     height=400,
                     width=500
                 )

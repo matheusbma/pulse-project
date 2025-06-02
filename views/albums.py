@@ -128,7 +128,7 @@ if not artist_albums.empty:
             title='Tipos de Lançamentos',
             labels={'x': 'Quantidade', 'y': 'Tipo'},
             color=type_counts.values,
-            color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
+            color_continuous_scale=[[0, COLORS['highlight']], [0.5, COLORS['accent']], [1, COLORS['accent2']]],
             height=400
         )
         fig_bar_horizontal.update_layout(
@@ -148,7 +148,7 @@ if not artist_albums.empty:
             title='Quantidade por Tipo',
             labels={'x': 'Tipo', 'y': 'Quantidade'},
             color=type_counts.values,
-            color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
+            color_continuous_scale=[[0, COLORS['highlight']], [0.5, COLORS['accent']], [1, COLORS['accent2']]],
             height=400
         )
         fig_bar_type.update_layout(
@@ -219,7 +219,7 @@ if not artist_albums.empty:
             labels=dict(x="Década", y="Tipo", color="Quantidade"),
             x=decade_type.index.astype(str),
             y=decade_type.columns,
-            color_continuous_scale=[[0, '#0f0f19'], [0.4, '#2d1b4a'], [0.7, '#7c3aed'], [1, '#c084fc']],
+            color_continuous_scale=[[0, '#c084fc'], [0.4, '#7c3aed'], [0.7, '#2d1b4a'], [1, '#0f0f19']],
             title='Produtividade por Década e Tipo',
             height=450
         )

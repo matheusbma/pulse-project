@@ -173,7 +173,7 @@ if all_events:
             color='show_count',
             title=f'Localização dos Shows de {selected_artist} pelo Mundo',
             projection='equirectangular',
-            color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
+            color_continuous_scale=[[0, COLORS['highlight']], [0.5, COLORS['accent']], [1, COLORS['accent2']]],
             height=600
         )
         fig_map.update_layout(
@@ -215,7 +215,7 @@ if all_events:
                 title='Top 10 Países com Mais Shows',
                 labels={'x': 'Número de Shows', 'y': 'País'},
                 color=country_counts.values,
-                color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
+                color_continuous_scale=[[0, COLORS['highlight']], [0.5, COLORS['accent']], [1, COLORS['accent2']]],
                 height=450
             )
             fig_countries.update_layout(
@@ -241,7 +241,7 @@ if all_events:
                 title='Top 10 Cidades com Mais Shows',
                 labels={'x': 'Número de Shows', 'y': 'Cidade'},
                 color=city_counts.values,
-                color_continuous_scale=[[0, COLORS['accent2']], [0.5, COLORS['accent']], [1, COLORS['highlight']]],
+                color_continuous_scale=[[0, COLORS['highlight']], [0.5, COLORS['accent']], [1, COLORS['accent2']]],
                 height=450
             )
             fig_cities.update_layout(
